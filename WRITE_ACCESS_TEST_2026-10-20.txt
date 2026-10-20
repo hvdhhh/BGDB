@@ -1,0 +1,6 @@
+BGDB - GitHub write access test (old account)
+Date: 2026-10-20
+GitHub account: hvdhhh
+Repository: hvdhhh/BGDB
+Purpose: Verify write access through the connected GitHub integration.
+This is a harmless test file.
