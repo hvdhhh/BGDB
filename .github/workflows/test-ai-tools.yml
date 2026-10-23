@@ -1,0 +1,43 @@
+name: BGDB Codespaces CLI installation test
+
+on:
+  push:
+    paths:
+      - ".devcontainer/**"
+      - ".github/workflows/test-ai-tools.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-ai-tools:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout BGDB
+        uses: actions/checkout@v4
+
+      - name: Install Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Reproduce the npm prefix conflict and verify fixed installer
+        shell: bash
+        run: |
+          printf "prefix=%s/old-global\nglobalconfig=%s/old-globalrc\n" "$HOME" "$HOME" > "$HOME/.npmrc"
+          bash .devcontainer/setup-ai-tools.sh
+
+      - name: Verify both tools and cleaned-up npmrc
+        shell: bash
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          codex --version
+          claude --version
+          if grep -Eq '^[[:space:]]*(prefix|globalconfig)[[:space:]]*=' "$HOME/.npmrc"; then
+            echo 'ERROR: npm prefix conflict still present' >&2
+            exit 1
+          fi
+          echo '### BGDB CLI installation successful' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Installed Codex and Claude Code; npm/nvm prefix conflict repaired.' >> "$GITHUB_STEP_SUMMARY"
