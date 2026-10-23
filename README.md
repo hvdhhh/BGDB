@@ -1,21 +1,29 @@
 # BGDB — Projects & Cloud AI Workspace
 
-This repository belongs to the GitHub account `hvdhhh`. The **BGDB AI Workspace** is prepared for GitHub Codespaces so there is no need for a local Mac, Linux VM, or Windows install.
+This repository belongs to the GitHub account `hvdhhh`. BGDB AI Workspace is a GitHub Codespaces Linux development environment. No Mac or self-hosted VM is required.
 
-## First launch
+## Codespaces — first launch
 
 1. Open https://github.com/hvdhhh/BGDB
-2. Select **Code → Codespaces → Create codespace on main** (or open https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=1427184616).
-3. Wait for the dev container to initialize. It installs Node.js, the OpenAI Codex CLI, and Claude Code CLI within the Codespace using `.devcontainer/setup-ai-tools.sh`.
-4. Open **Terminal** and run `codex --version`, then `claude --version`.
-5. Run `codex` and `claude` separately to sign in with the user's existing ChatGPT Plus and Claude Pro subscriptions. The login flow may require browser authorization or other manual authentication.
+2. Select **Code → Codespaces → Create codespace on main**, or use https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=1427184616
+3. The `.devcontainer/devcontainer.json` installs Node.js and runs `.devcontainer/setup-ai-tools.sh` to install the Codex and Claude Code CLIs.
+4. Open the integrated terminal and verify `codex --version` and `claude --version`.
+5. Run `codex` and `claude` and complete interactive authentication with the appropriate accounts.
 
-**Status:** Configuration is committed; a Codespace has not been started or verified yet. An interactive first login is still necessary. If any post-create installation fails, inspect the Codespaces creation logs and re-run `bash .devcontainer/setup-ai-tools.sh` in the Codespace terminal.
+## Fix for Codespaces created before the nvm/npm repair
 
-**Costs:** GitHub Codespaces has its own quota/usage billing; ChatGPT and Claude subscriptions do not pay GitHub compute fees. Keep track of Codespaces consumption. Do not put API keys, passwords, tokens or private data in this public repository.
+An earlier setup accidentally wrote a `prefix` property in `~/.npmrc`, which conflicts with nvm. The script has been corrected to install the CLIs locally without setting a global npm prefix. If a Codespace was created before this fix, run **one command** in its terminal:
 
-## Scope and boundaries
+```bash
+git pull --ff-only && bash .devcontainer/setup-ai-tools.sh
+```
 
-This workspace is the initial *development environment*, not an autonomous manager yet. Installing Codex and Claude Code does not automatically enable delegation between them. We will separately implement and test a task dispatcher, GitHub branch/PR workflow, approval gates, and status reporting to ChatGPT.
+The command updates the files, cleans up only the legacy npm prefix/globalconfig settings, installs both CLIs inside Codespaces, and displays their versions. Do not run it with `sudo`. The script does not sign in to either provider; authentication is interactive.
 
-Our separate security scanner remains in https://github.com/ykinfohome7/BGDB (GitHub account `ykinfohome7`, linked as BGDB INFO). Do not merge the two repositories or copy their credentials without explicit project-specific instructions.
+## Scope, limitations and costs
+
+This repository is the development workspace, **not** the completed autonomous AI task dispatcher. Installing the CLIs does not by itself connect Codex and Claude Code or authorize the manager to schedule them. Delegation, Git branches and pull requests, approval gates, and reporting back to ChatGPT will be implemented and tested separately.
+
+GitHub Codespaces compute/storage has its own quota and billing, separate from ChatGPT Plus and Claude Pro. Never commit access tokens, API keys or passwords into this public repository.
+
+The **SSL/TLS Security Scanner** remains in the other connected account at https://github.com/ykinfohome7/BGDB; keep the two repositories and credentials separate.
